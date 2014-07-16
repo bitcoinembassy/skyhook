@@ -397,7 +397,7 @@ PageManager.addPage( PageIds.DEPOSIT,
     $(context.hashid + " .no-funds-error").text(_("Bitcoin funds empty: Do not insert any more bills."));
     $(context.hashid + " .cash-deposited-label").text(_("cash deposited"));
     $(context.hashid + " .bitcoin-purchased-label").text(_("bitcoin purchased"));
-    $(context.hashid + " .cash-deposited-currency").text(CAD); // TODO: Get currency from config
+    $(context.hashid + " .cash-deposited-currency").text("CAD"); // TODO: Get currency from config
     $(context.hashid + " .bitcoin-sent-to-label").text(_("Bitcoin will be sent to:"));
     $("#btn-buy-cancel").text(_("Cancel"));
     $("#btn-send-bitcoin").text(_("Send Bitcoin"));
