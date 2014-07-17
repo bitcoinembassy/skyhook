@@ -126,7 +126,7 @@ body {
   color:#777;
 }
 
-#DEPOSIT-PAGE .bitcoin-sent-to {
+#DEPOSIT-PAGE .bitcoin-sent-to-value {
   font-size:24px;
   font-family:monospace;
   margin-bottom:40px;
@@ -147,7 +147,7 @@ body {
   margin-top:80px;
 }
 
-#RECEIPT-PAGE .bitcoin-sent-to {
+#RECEIPT-PAGE .bitcoin-sent-to-value {
   font-size:24px;
   font-family:monospace;
   font-weight:bold;

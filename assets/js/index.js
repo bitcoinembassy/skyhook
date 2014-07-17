@@ -104,6 +104,12 @@ var PageManager = (function() {
     }
   }
 
+  function getSetTextFunc(id) {
+    return function(selector, text) {
+      $("#" + id + " " + selector).text(text);
+    }
+  }
+
   return {
     // addPage() - Add a page to be managed by the PageManager.
     //   id - ID if the container DIV for the page
@@ -113,7 +119,7 @@ var PageManager = (function() {
     //   onExit - func called each time before leaving the page
     addPage : function(id, onInit, onL10n, onEnter, onExit) {
       pageMap[id] = {
-        "context" : { "id" : id },
+        "context" : { "id" : id, "setText" : getSetTextFunc(id) },
         "id" : id,
         "hashid" : "#" + id,  
         "inited" : false,
@@ -286,8 +292,8 @@ PageManager.addPage( PageIds.QRSCAN,
   },
 
   function L10N(context) { 
-    $(context.hashid + " .instructions").text(_("Please hold up your bitcoin QR code"));
-    $("#btn-scan-cancel").text(_("Cancel"));
+    context.setText(".instructions", _("Please hold up your bitcoin QR code"));
+    context.setText("#btn-scan-cancel", _("Cancel"));
   },
 
   function ENTER(context) {
@@ -393,14 +399,15 @@ PageManager.addPage( PageIds.DEPOSIT,
   },
 
   function L10N(context) {
-    $(context.hashid + " .instructions").text(_("Insert a bill"));
-    $(context.hashid + " .no-funds-error").text(_("Bitcoin funds empty: Do not insert any more bills."));
-    $(context.hashid + " .cash-deposited-label").text(_("cash deposited"));
-    $(context.hashid + " .bitcoin-purchased-label").text(_("bitcoin purchased"));
-    $(context.hashid + " .cash-deposited-currency").text("CAD"); // TODO: Get currency from config
-    $(context.hashid + " .bitcoin-sent-to-label").text(_("Bitcoin will be sent to:"));
-    $("#btn-buy-cancel").text(_("Cancel"));
-    $("#btn-send-bitcoin").text(_("Send Bitcoin"));
+    context.setText(".instructions", _("Insert a bill"));
+    // TODO: l10n low-funds msg
+    context.setText(".no-funds-error", _("Bitcoin funds empty: Do not insert any more bills.")); 
+    context.setText(".cash-deposited-label", _("cash deposited"));
+    context.setText(".bitcoin-purchased-label", _("bitcoin purchased"));
+    context.setText(".cash-deposited-currency", "CAD"); // TODO: Get currency from config
+    context.setText(".bitcoin-sent-to-label", _("Bitcoin will be sent to:"));
+    context.setText("#btn-buy-cancel", _("Cancel"));
+    context.setText("#btn-send-bitcoin", _("Send Bitcoin"));
   },
 
   function ENTER(context) {
@@ -432,7 +439,7 @@ PageManager.addPage( PageIds.DEPOSIT,
         context.diff = data.diff;
  
         if (typeof context.diff != "undefined") {
-          // TODO: properly localize for other currencies
+          // TODO: properly localize for other currencies. 
           if (context.diff >= 100) {
             // No need to warn about inserting > $100. No bills > $100.
             $('.low-funds-warning').hide();
@@ -440,7 +447,7 @@ PageManager.addPage( PageIds.DEPOSIT,
           } else if (context.diff >= 5) {
             // Smallest CAD bill is $5. Treat smaller diffs as no-more-funds.
             $('.no-funds-error').hide();
-            $(context.hashid + " .low-funds-warning").text(_("Bitcoin funds low: Do not insert bills larger than %1", ["$" + context.diff]));
+            context.setText(".low-funds-warning", _("Bitcoin funds low: Do not insert bills larger than %1", ["$" + context.diff]));
             $('.low-funds-warning').show();
           } else {
             // Refuse any more bills.
@@ -467,9 +474,10 @@ PageManager.addPage( PageIds.DEPOSIT,
 
     CurrentPriceUIWrapper.displayOnPage(PageIds.DEPOSIT);
     CurrentPriceUIWrapper.updatePrice(context.price);
+
     $('#bitcoin-purchased-amount').text("0.00000000");
-    $('#cash-deposited-amount').text("$0");
-    $('.bitcoin-sent-to').text(context.address);
+    $('#cash-deposited-amount').text("$0"); // TODO: L10N Currency
+    $('.bitcoin-sent-to-value').text(context.address);
     $('.low-funds-warning').hide();
     $('.no-funds-error').hide();
     $('#btn-buy-cancel').show();
@@ -495,7 +503,11 @@ PageManager.addPage( PageIds.RECEIPT,
     }); 
   },
 
-  function L10N(context) { },
+  function L10N(context) {
+    context.setText(".thanks", _("Thanks!"));
+    context.setText(".bitcoin-sent-to-label", _("has just been sent to"));   
+    context.setText("#btn-done", _("Done"));   
+  },
 
   function ENTER(context) { 
     if (!context.extra) {
@@ -509,9 +521,9 @@ PageManager.addPage( PageIds.RECEIPT,
 
     CurrentPriceUIWrapper.displayOnPage(PageIds.RECEIPT);
     CurrentPriceUIWrapper.updatePrice(context.price);
- 
-    $("#bitcoin-sent-amount").text(context.btc);
-    $(".bitcoin-sent-to").text(context.address);
+
+    context.setText("#bitcoin-sent-value", context.btc); 
+    context.setText(".bitcoin-sent-to-value", context.address); 
 
     IdleTimeout.start(10);
   },
@@ -564,15 +576,13 @@ PageManager.addPage( PageIds.LANG,
 PageManager.addPage( PageIds.ERROR,
 
   function INIT(context) {
-    $("#email-address").Watermark("Email Address (optional)");
-
     $("#btn-error-done").on("click", function() {
       $.Watermark.HideAll();
       IdleTimeout.restart();
       var emailField = $("#email-address");
 
       if (emailField.val() != "") {
-        Loading.text("Please wait...");
+        Loading.text(_("Please wait..."));
         Loading.show();
         $.getJSON('/add-email-to-ticket/' + context.extra["ticketId"], { email: emailField.val() })
           .done(function (data) {
@@ -599,7 +609,13 @@ PageManager.addPage( PageIds.ERROR,
     });
   },
 
-  function L10N(context) { },
+  function L10N(context) {
+    $("#email-address").Watermark(_("Email Address (optional)"));
+    context.setText(".header", _("A transaction error has occurred."));
+    context.setText(".info", _("This transaction has been logged and the operator notified for manual processing."));
+    context.setText(".instructions", _("You may enter your email address so that the operator may notify you when this issue is resolved."));
+    context.setText("#btn-error-done", _("Done"));
+  },
 
   function ENTER(context) {
     if (!context.extra) {
@@ -622,8 +638,15 @@ PageManager.addPage( PageIds.ERROR,
 
 /* Network Error Page */
 PageManager.addPage( PageIds.NETWORKERROR,
+
   function INIT(context) { },
-  function L10N(context) { },
+
+  function L10N(context) {
+    context.setText(".header", _("Network Unreachable"));  
+    context.setText(".instructions", _("If the problem persists, please contact the operator."));  
+    // TODO: embed network operator contact info.
+  },
+
   function ENTER(context) { NetworkMonitor.start() },
   function EXIT(context) { NetworkMonitor.stop() }
 );
