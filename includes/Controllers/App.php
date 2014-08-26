@@ -14,6 +14,7 @@ class App implements Controller {
 				"default-src 'self'",
 				"script-src 'self' 'unsafe-eval'",
 				"object-src 'none'",
+				"media-src mediastream:",
 				"report-uri /report;",
 			])
 		);

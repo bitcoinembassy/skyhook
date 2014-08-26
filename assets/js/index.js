@@ -566,7 +566,12 @@ PageManager.addPage( PageIds.HELP,
 /* Language Page */
 PageManager.addPage( PageIds.LANG,
   
-  function INIT(context) { },
+  function INIT(context) { 
+    $(".btn-back").on("click", function(e) {
+      PageManager.viewPage(PageIds.START);
+    });
+  },
+
   function L10N(context) { },
   function ENTER(context) { },
   function EXIT(context) { }
@@ -652,6 +657,6 @@ PageManager.addPage( PageIds.NETWORKERROR,
 );
 
 $(function() {
-    FastClick.attach(document.body);
+  FastClick.attach(document.body);
 });
 PageManager.viewPage(PageIds.START);

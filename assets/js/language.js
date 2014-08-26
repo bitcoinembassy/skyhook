@@ -21,7 +21,8 @@ var Language = (function (globals) {
 	
 	return {
 		load: load,
-		getLastLangChange: getLastLangChange
+		getLastLangChange: getLastLangChange,
+		enableTesting: function() { debug = true; }
 	}
 }(this));
 
