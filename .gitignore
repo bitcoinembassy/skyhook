@@ -3,6 +3,7 @@ scanner/debug_log
 scanner/driver.pid
 scanner/input/
 vendor/*
+vendor
 currency
 locale
 includes/PricingProviders

@@ -205,6 +205,15 @@ body {
   display:block;
 }
 
+#LANG-PAGE .lang-item {
+  text-align:left;
+  font-size: 32px;
+  color:#36c;
+  background-color:#eee;
+  padding: 20px 20px;
+  border-bottom:2px solid #999;
+}
+
 #ERROR-PAGE {
   background-color:#efefef;
 }

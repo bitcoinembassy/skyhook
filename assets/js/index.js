@@ -400,7 +400,6 @@ PageManager.addPage( PageIds.DEPOSIT,
 
   function L10N(context) {
     context.setText(".instructions", _("Insert a bill"));
-    // TODO: l10n low-funds msg
     context.setText(".no-funds-error", _("Bitcoin funds empty: Do not insert any more bills.")); 
     context.setText(".cash-deposited-label", _("cash deposited"));
     context.setText(".bitcoin-purchased-label", _("bitcoin purchased"));
@@ -475,8 +474,8 @@ PageManager.addPage( PageIds.DEPOSIT,
     CurrentPriceUIWrapper.displayOnPage(PageIds.DEPOSIT);
     CurrentPriceUIWrapper.updatePrice(context.price);
 
-    $('#bitcoin-purchased-amount').text("0.00000000");
-    $('#cash-deposited-amount').text("$0"); // TODO: L10N Currency
+    $('#bitcoin-purchased-value').text("0.00000000");
+    $('#cash-deposited-value').text("$0"); // TODO: L10N Currency
     $('.bitcoin-sent-to-value').text(context.address);
     $('.low-funds-warning').hide();
     $('.no-funds-error').hide();
@@ -537,27 +536,40 @@ PageManager.addPage( PageIds.RECEIPT,
 PageManager.addPage( PageIds.HELP,
   
   function INIT(context) {
-    $(".qa-box").on("click", function(e) {
-      $(".qa-box").removeClass("selected");
-      $(e.delegateTarget).addClass("selected");
-      $(".main-box").addClass("selected");
-    });
-  
-    $(".btn-back").on("click", function(e) {
-      if ($(".main-box").hasClass("selected")) {
-        $(".qa-box").removeClass("selected");
-        $(".main-box").removeClass("selected");
+    $("#HELP-PAGE .btn-back").on("click", function(e) {
+      if ($("#HELP-PAGE .main-box").hasClass("selected")) {
+        $("#HELP-PAGE .qa-box").removeClass("selected");
+        $("#HELP-PAGE .main-box").removeClass("selected");
       } else {
         PageManager.viewPage(PageIds.START);
       }
     });
   },
 
-  function L10N(context) { },
+  function L10N(context) { 
+    // After a language change we need to dynamically recreate the QA html
+    $("#HELP-PAGE .main-box").empty();
+
+    var qaList = Help.getQAList(Language.getCurrentLang());
+    for (var i = 0; i < qaList.length; i++) {
+      $("#HELP-PAGE .main-box").append(
+        $("<div/>", { class: 'qa-box' })
+          .append($("<div/>", { class: 'question', html: qaList[i][0] }))
+          .append($("<div/>", { class: 'answer', html: qaList[i][1] }))
+      );
+    } 
+
+    // Make all the QA items clickable
+    $("#HELP-PAGE .qa-box").on("click", function(e) {
+      $("#HELP-PAGE .qa-box").removeClass("selected");
+      $(e.delegateTarget).addClass("selected");
+      $("#HELP-PAGE .main-box").addClass("selected");
+    });
+  },
 
   function ENTER(context) {
-    $(".qa-box").removeClass("selected");
-    $(".main-box").removeClass("selected");
+    $("#HELP-PAGE .qa-box").removeClass("selected");
+    $("#HELP-PAGE .main-box").removeClass("selected");
   },
 
   function EXIT(context) { }
@@ -567,12 +579,33 @@ PageManager.addPage( PageIds.HELP,
 PageManager.addPage( PageIds.LANG,
   
   function INIT(context) { 
-    $(".btn-back").on("click", function(e) {
+    $("#LANG-PAGE .btn-back").on("click", function(e) {
+      PageManager.viewPage(PageIds.START);
+    });
+
+    // Dynamically generate the list of languages
+    for (var i = 0; i < Languages.length; i++) {
+      if (Languages[i].locale_name.indexOf("_") != -1) {
+        // Skipping languages when localized for specific countries.
+        // Multiple English entries when only supporting 4 langs? Seems silly.
+        continue;
+      }
+      $("#LANG-PAGE .main-box").append(
+        $("<div/>", { class: 'lang-item', text: Languages[i].label, shlang: Languages[i].locale_name })
+      );
+    }
+
+    // Make all the language names clickable
+    $("#LANG-PAGE .lang-item").on("click", function(e) {
+      Language.load($(e.delegateTarget).attr("shlang"));
       PageManager.viewPage(PageIds.START);
     });
   },
 
-  function L10N(context) { },
+  function L10N(context) { 
+
+  },
+
   function ENTER(context) { },
   function EXIT(context) { }
 );
@@ -659,4 +692,5 @@ PageManager.addPage( PageIds.NETWORKERROR,
 $(function() {
   FastClick.attach(document.body);
 });
+Language.load("en");
 PageManager.viewPage(PageIds.START);
