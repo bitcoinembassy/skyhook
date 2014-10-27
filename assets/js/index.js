@@ -192,7 +192,7 @@ PageManager.addPage( PageIds.START,
     SkyhookUtils.disableBillAcceptor();
     Comet.open('/price', function (price) {
       // TODO: Localize the price we get via Comet
-      CurrentPriceUIWrapper.updatePrice("$" + price);
+      CurrentPriceUIWrapper.updatePrice(Currency.format(price));
     });
     CurrentPriceUIWrapper.displayOnPage(PageIds.START);
     NetworkMonitor.start();
@@ -298,7 +298,7 @@ PageManager.addPage( PageIds.QRSCAN,
 
   function ENTER(context) {
     Comet.open('/price', function (price) {
-      CurrentPriceUIWrapper.updatePrice("$" + price);
+      CurrentPriceUIWrapper.updatePrice(Currency.format(price));
     });
     CurrentPriceUIWrapper.displayOnPage(PageIds.QRSCAN);
 
@@ -430,7 +430,7 @@ PageManager.addPage( PageIds.DEPOSIT,
         context.btc = data.btc;
 
         // TODO: Format the two amounts before displaying?
-        $('#cash-deposited-value').text("$" + parseInt(context.bills));
+        $('#cash-deposited-value').text(Currency.format(context.bills));
         $('#bitcoin-purchased-value').text(context.btc);
       }
 
@@ -438,15 +438,14 @@ PageManager.addPage( PageIds.DEPOSIT,
         context.diff = data.diff;
  
         if (typeof context.diff != "undefined") {
-          // TODO: properly localize for other currencies. 
-          if (context.diff >= 100) {
-            // No need to warn about inserting > $100. No bills > $100.
+          if (context.diff >= Currency.largestDenomination()) {
+            // Don't show low-fund warnings if we can still handle largest bill denomination
             $('.low-funds-warning').hide();
             $('.no-funds-error').hide();
-          } else if (context.diff >= 5) {
-            // Smallest CAD bill is $5. Treat smaller diffs as no-more-funds.
+          } else if (context.diff >= Currency.smallestDenomination()) {
+            // Getting low, but not out. Show appropriate low-funds warning.
             $('.no-funds-error').hide();
-            context.setText(".low-funds-warning", _("Bitcoin funds low: Do not insert bills larger than %1", ["$" + context.diff]));
+            context.setText(".low-funds-warning", _("Bitcoin funds low: Do not insert bills larger than %1", [Currency.format(context.diff)]));
             $('.low-funds-warning').show();
           } else {
             // Refuse any more bills.
@@ -475,7 +474,7 @@ PageManager.addPage( PageIds.DEPOSIT,
     CurrentPriceUIWrapper.updatePrice(context.price);
 
     $('#bitcoin-purchased-value').text("0.00000000");
-    $('#cash-deposited-value').text("$0"); // TODO: L10N Currency
+    $('#cash-deposited-value').text(Currency.format(0));
     $('.bitcoin-sent-to-value').text(context.address);
     $('.low-funds-warning').hide();
     $('.no-funds-error').hide();
@@ -693,4 +692,5 @@ $(function() {
   FastClick.attach(document.body);
 });
 Language.load("en");
+Currency.init(CurrencyData);
 PageManager.viewPage(PageIds.START);
