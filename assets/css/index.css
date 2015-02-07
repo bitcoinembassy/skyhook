@@ -73,7 +73,7 @@ body {
   color:#fff;
   font-size:72px;
   padding-bottom:10px;
-  padding-top:40px;
+  padding-top:20px;
   background-color:#F7941E;
   text-shadow: -2px -2px 0 rgba(0,0,0,0.15);
 }
@@ -88,7 +88,7 @@ body {
 
 #DEPOSIT-PAGE .totals-box {
   width:100%;
-  padding:35px 0;
+  padding:20px 0;
   background-color:#ddd;
   border-top:1px solid #555;
   border-bottom:1px solid #555;
@@ -107,7 +107,6 @@ body {
   font-size:64px;
   font-weight:bold;
   color:#4585C4;
-  margin:10px;
 }
 
 #DEPOSIT-PAGE .bitcoin-purchased-label {
@@ -121,7 +120,7 @@ body {
 
 #DEPOSIT-PAGE .bitcoin-sent-to-label {
   font-size:36px;
-  margin-top:30px;
+  margin-top:20px;
   margin-bottom:5px;
   color:#777;
 }
