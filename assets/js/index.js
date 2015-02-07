@@ -292,7 +292,7 @@ PageManager.addPage( PageIds.QRSCAN,
   },
 
   function L10N(context) { 
-    context.setText(".instructions", _("Please hold up your bitcoin QR code"));
+    context.setText(".instructions", _("Please show a QR code of your bitcoin address"));
     context.setText("#btn-scan-cancel", _("Cancel"));
   },
 
