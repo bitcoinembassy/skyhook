@@ -10,7 +10,7 @@ var SkyhookUtils = (function(){
 var CurrentPriceUIWrapper = (function(id) {
   return {
     updatePrice : function(price) {
-      $("#" + id + "-value").text(_("Currently %1 per Bitcoin", [price]));
+      $("#" + id + "-value").text(_("%1", [price]));
     },
     displayOnPage : function(pageId) {
       $("#" + pageId)[0].appendChild($("#" + id + "-box")[0]);
