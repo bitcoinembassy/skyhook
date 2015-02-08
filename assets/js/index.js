@@ -171,7 +171,7 @@ var PageManager = (function() {
 PageManager.addPage( PageIds.START,
 
   function INIT(context) {
-    $("#btn-buy-bitcoin").on("click", function() {
+    $(".buy-bitcoin").on("click", function() {
       PageManager.viewPage(PageIds.QRSCAN);
     });
     $("#btn-help").on("click", function() {
