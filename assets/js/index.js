@@ -184,7 +184,7 @@ PageManager.addPage( PageIds.START,
 
   function L10N(context) { 
     $(".bitcoin-atm").text(_("Bitcoin ATM"));
-    $("#btn-buy-bitcoin").text(_("Buy some Bitcoin"));
+    $("#btn-buy-bitcoin").text(_("Touch to start"));
     CurrentPriceUIWrapper.updatePrice("...");
   },
 
